@@ -1,0 +1,34 @@
+const ranks=[
+["Top Dog",1],["Right Hand",1],["Big Homie",3],["Shot Caller",6],["OG",15],
+["Block Organiser",25],["Day One",35],["Street Runner",50],["Hustler",50],["New Face",50]
+];
+const pages={
+home:`<section class="hero"><div class="hero-content"><div class="eyebrow">Los Santos · Est. 63rd</div><h1>63rd Street<br><span>Crew</span></h1><p>The 63rd Street Crew is built on loyalty, respect and family. Established in Los Santos, we stand together, look after our own and represent the 63rd with pride. One crew, one name, one family.</p></div></section>`,
+applications:`<div class="page-wrap page-enter"><header class="page-heading"><div class="eyebrow">Become part of the family</div><h1>Applications</h1><p>Interested in joining the 63rd Street Crew? Choose the application that best describes the position you are applying for.</p></header><div class="info-grid"><section class="info-panel"><h3>Member Application</h3><p>Apply to join the crew as a member.</p></section><section class="info-panel"><h3>Command Application</h3><p>Apply for a leadership position. Previous experience and activity matter.</p></section></div><div class="notice">Applications are currently a website preview. Submissions are not sent or stored yet. Do not enter personal or sensitive information.</div><form id="application-form"><div class="form-grid"><div class="field"><label for="type">Application type</label><select id="type" required><option value="">Choose one</option><option>Member</option><option>Command</option></select></div><div class="field"><label for="rpname">In-game name</label><input id="rpname" required placeholder="Your character name"></div><div class="field"><label for="age">RP age</label><input id="age" placeholder="Your character's age"></div><div class="field"><label for="experience">Previous experience</label><input id="experience" placeholder="Optional"></div><div class="field full"><label for="why">Why do you want to join?</label><textarea id="why" required placeholder="Tell us a little about your character..."></textarea></div><div class="field full"><button class="button" type="submit">Preview application</button></div></div></form><p id="form-message" class="copy" aria-live="polite"></p></div>`,
+chain:`<div class="page-wrap page-enter"><header class="page-heading"><div class="eyebrow">Respect the structure</div><h1>Chain of Command</h1><p>The crew's rank structure, from leadership through to new members. Numbers show the planned places for each rank, not confirmed member names.</p></header><div class="rank-list">${ranks.map(([name,count],i)=>`<div class="rank"><div><small>Rank ${String(i+1).padStart(2,"0")}</small><br><strong>${name}</strong></div><div class="rank-count">${count}</div></div>`).join("")}</div></div>`,
+information:`<div class="page-wrap page-enter"><header class="page-heading"><div class="eyebrow">Who we are</div><h1>Gang Information</h1><p>A crew built around loyalty, respect and looking after one another.</p></header><section><h2 class="section-title">Our Story</h2><p class="copy">The 63rd Street Crew represents its name with pride. Our identity is built on unity, commitment and respect. Every member has a part to play in building the crew's reputation across Los Santos.</p></section><section><h2 class="section-title">Rules &amp; Expectations</h2><div class="info-grid"><article class="info-panel"><h3>Respect</h3><p>Treat crew members and the wider roleplay community with respect.</p></article><article class="info-panel"><h3>Loyalty</h3><p>Support the crew, communicate clearly and stand by agreed decisions.</p></article><article class="info-panel"><h3>Roleplay</h3><p>Keep interactions fair, believable and enjoyable for everyone involved.</p></article><article class="info-panel"><h3>Activity</h3><p>Stay involved where possible and let leadership know if you will be away.</p></article></div></section></div>`,
+turf:`<div class="page-wrap page-enter"><header class="page-heading"><div class="eyebrow">Our side of Los Santos</div><h1>Streets &amp; Turf</h1><p>Five locations associated with the 63rd Street Crew's roleplay identity.</p></header><div class="place-grid"><article class="place"><h3>Grove Street</h3><p>South Los Santos</p></article><article class="place"><h3>Chamberlain Hills</h3><p>South Los Santos</p></article><article class="place"><h3>Strawberry</h3><p>Central South Los Santos</p></article><article class="place"><h3>Rancho</h3><p>East Los Santos</p></article><article class="place"><h3>Davis</h3><p>South Los Santos</p></article></div></div>`,
+media:`<div class="page-wrap page-enter"><header class="page-heading"><div class="eyebrow">Crew moments</div><h1>Media Gallery</h1><p>A place for crew screenshots, artwork, clothing, vehicles, MLOs and event photography.</p></header><div class="media-grid"><article class="media-item"><h3>Screenshots</h3><p>In-city moments and crew photos.</p></article><article class="media-item"><h3>Artwork</h3><p>Logos, graphics and crew designs.</p></article><article class="media-item"><h3>Clothing &amp; Vehicles</h3><p>Outfits, custom builds and vehicle showcases.</p></article><article class="media-item"><h3>Events</h3><p>Highlights from crew events and roleplay.</p></article></div><div class="empty-state" style="margin-top:16px">Gallery images will be added here.</div></div>`,
+portal:`<div class="page-wrap page-enter"><header class="page-heading"><div class="eyebrow">Members only</div><h1>Member Portal</h1><p>A private area for crew members is planned for a later release.</p></header><div class="notice">Member sign-in is not active yet. No login details are requested or stored on this preview site.</div></div>`
+};
+function render(){
+ const page=(location.hash||"#home").slice(1);
+ const key=Object.hasOwn(pages,page)?page:"home";
+ document.getElementById("app").innerHTML=pages[key];
+ document.querySelectorAll(".main-nav a").forEach(a=>a.classList.toggle("active",a.dataset.page===key));
+ document.querySelector(".main-nav").classList.remove("open");
+ document.querySelector(".menu-toggle").setAttribute("aria-expanded","false");
+ window.scrollTo(0,0);
+}
+window.addEventListener("hashchange",render);
+document.querySelector(".menu-toggle").addEventListener("click",()=>{
+ const nav=document.querySelector(".main-nav");
+ const open=nav.classList.toggle("open");
+ document.querySelector(".menu-toggle").setAttribute("aria-expanded",String(open));
+});
+document.addEventListener("submit",event=>{
+ if(event.target.id!=="application-form")return;
+ event.preventDefault();
+ document.getElementById("form-message").textContent="This is a preview only. Your application has not been submitted or saved.";
+});
+render();
