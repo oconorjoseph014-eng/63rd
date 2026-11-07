@@ -46,9 +46,36 @@ function updateFeatured(){
  cards.forEach(([id,data])=>{const card=document.getElementById(id);if(!card)return;card.href="#"+data[3];card.innerHTML="<small>"+data[0]+"</small><h2>"+data[1]+"</h2><span>"+data[2]+" <b>→</b></span>";});
  const count=document.getElementById("story-count");if(count)count.textContent=String(featuredIndex+1).padStart(2,"0")+" / 03";
 }
-function render(){const page=(location.hash||"#home").slice(1);const key=Object.hasOwn(pages,page)?page:"home";document.getElementById("app").innerHTML=pages[key];document.querySelectorAll(".main-nav a").forEach(a=>a.classList.toggle("active",a.dataset.page===key));const nav=document.querySelector(".main-nav");nav.classList.remove("open");document.querySelector(".menu-toggle").setAttribute("aria-expanded","false");window.scrollTo({top:0,behavior:"smooth"});}
+function render(){const page=(location.hash||"#home").slice(1);const key=Object.hasOwn(pages,page)?page:"home";document.getElementById("app").innerHTML=pages[key];document.querySelectorAll(".main-nav a").forEach(a=>a.classList.toggle("active",a.dataset.page===key));const nav=document.querySelector(".main-nav");nav.classList.remove("open");document.querySelector(".menu-toggle").setAttribute("aria-expanded","false");if(key==="home")updateFeatured();window.scrollTo({top:0,behavior:"smooth"});}
 window.addEventListener("hashchange",render);
 document.querySelector(".menu-toggle").addEventListener("click",()=>{const nav=document.querySelector(".main-nav");const open=nav.classList.toggle("open");document.querySelector(".menu-toggle").setAttribute("aria-expanded",String(open));});
 document.addEventListener("submit",event=>{if(event.target.id!=="application-form")return;event.preventDefault();document.getElementById("form-message").textContent="Preview only — your application has not been submitted or saved.";});
 document.addEventListener("click",event=>{const chip=event.target.closest("[data-filter]");if(!chip)return;const filter=chip.dataset.filter;document.querySelectorAll(".filter-chip").forEach(b=>b.classList.toggle("active",b===chip));document.querySelectorAll(".media-item").forEach(card=>{card.hidden=filter!=="all"&&card.dataset.category!==filter;});});
+document.addEventListener("click",event=>{
+ const control=event.target.closest("[data-story]");
+ if(!control)return;
+ featuredIndex=(featuredIndex+(control.dataset.story==="next"?1:2))%featuredStories.length;
+ updateFeatured();
+});
+const searchInput=document.getElementById("site-search");
+if(searchInput){
+ const searchRoutes=[
+  {terms:["home","homepage","main"],page:"home"},
+  {terms:["apply","application","recruitment","join"],page:"applications"},
+  {terms:["team","leadership","rank","command","structure"],page:"chain"},
+  {terms:["about","identity","story","values","code"],page:"information"},
+  {terms:["location","territory","turf","street","grove","davis"],page:"turf"},
+  {terms:["media","gallery","photo","video"],page:"media"},
+  {terms:["document","sop","roster","spreadsheet"],page:"documents"},
+  {terms:["portal","login","member"],page:"portal"}
+ ];
+ searchInput.addEventListener("keydown",event=>{
+  if(event.key!=="Enter")return;
+  const query=searchInput.value.trim().toLowerCase();
+  if(!query)return;
+  const match=searchRoutes.find(route=>route.terms.some(term=>query.includes(term)||term.includes(query)));
+  if(match){location.hash=match.page;searchInput.value="";}
+  else{searchInput.setCustomValidity("No matching section found. Try recruitment, leadership, territory or media.");searchInput.reportValidity();searchInput.addEventListener("input",()=>searchInput.setCustomValidity(""),{once:true});}
+ });
+}
 render();
